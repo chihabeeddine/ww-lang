@@ -1,13 +1,18 @@
 <template>
-    <div class="ww-markdown">
-        <div class="test" v-html="mark"></div>
+    <div class="ww-lang">
+        <div class="current-lang">
+            {{displayLang(currentLang)}}
+            <span class="triangle"></span>
+        </div>
+        <div class="lang-container">
+            <div class="lang" v-for="lang in availableLangs" :key="lang" @click="setLang(lang)">{{displayLang(lang)}}</div>
+        </div>
     </div>
 </template>
  
 
 <script>			
 import Vue from 'vue';
-const markdowned = window.markdownit();
 
 export default {
     name: "__COMPONENT_NAME__",
@@ -20,8 +25,18 @@ export default {
     },
     data() {
         return {
-            content: "# Header 1\n\n ```\ncode\n```\n\n **bold text**\n\n`single backticks`",
-            mark: ''
+            currentLang: wwLib.wwLang.lang,
+            availableLangs: wwLib.wwLang.availableLangs,
+            languages: {
+                en: {
+                    en: 'English',
+                    fr: 'Anglais'
+                },
+                fr: {
+                    en: 'French',
+                    fr: 'Français'
+                }
+            }
         }
     },
     computed: {
@@ -37,11 +52,13 @@ export default {
     methods: {
         init() {
             this.loaded = true
-            this.renderMarkdown()
         },
-        renderMarkdown() {
-            this.mark = markdowned.render(this.content);
-            console.log(this.mark)
+        setLang(lang) {
+            wwLib.wwLang.setLang(lang)
+            this.currentLang = lang
+        },
+        displayLang(lang) {
+            return this.languages[lang][lang]
         }
     },
     mounted() {
@@ -65,9 +82,47 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.ww-markdown {
+.ww-lang {
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: 150px;
+    .lang-container {
+        display: flex;
+        flex-direction: column;
+        width: 150px;
+        background-color: white;
+        border: 1px solid #979797;
+        border-radius: 3px;
+        margin-top: 5px;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.8s linear;
+        .lang {
+            padding: 5px 10px;
+            cursor: pointer;
+            &:hover {
+                background-color: #fafafa;
+            }
+        }
+    }
+    &:hover {
+        .lang-container {
+            visibility: visible;
+            opacity: 1;
+        }
+    }
+    .current-lang {
+        position: relative;
+        .triangle {
+            position: absolute;
+            bottom: 0;
+            transform: translateY(-100%);
+            margin-left: 5px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 8px 5px 0 5px;
+            border-color: #979797 transparent transparent transparent;
+        }
+    }
 }
 </style>
