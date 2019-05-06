@@ -123,13 +123,13 @@ export default {
         .triangle {
             position: absolute;
             right: -15px;
-            bottom: 0;
-            transform: translateY(-100%);
+            top: 55%;
+            transform: translateY(-50%);
             margin-left: 5px;
             width: 0;
             height: 0;
             border-style: solid;
-            border-width: 8px 5px 0 5px;
+            border-width: 7px 4.5px 0 4.5px;
             border-color: #2c2c2c transparent transparent transparent;
         }
     }
