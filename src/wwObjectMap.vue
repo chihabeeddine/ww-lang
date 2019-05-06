@@ -2,10 +2,14 @@
     <div class="ww-lang">
         <div class="current-lang">
             {{displayLang(currentLang)}}
-            <span class="triangle"></span>
+            <div class="triangle-container">
+                <span class="triangle"></span>
+            </div>
         </div>
-        <div class="lang-container">
-            <div class="lang" v-for="lang in availableLangs" :key="lang" @click="setLang(lang)">{{displayLang(lang)}}</div>
+        <div class="hover-zone">
+            <div class="lang-container">
+                <div class="lang" v-for="lang in availableLangs" :key="lang" @click="setLang(lang)">{{displayLang(lang)}}</div>
+            </div>
         </div>
     </div>
 </template>
@@ -84,53 +88,65 @@ export default {
 <style lang="scss" scoped>
 .ww-lang {
     position: relative;
-    width: 150px;
+    min-width: 50px;
     height: 100%;
     display: flex;
     align-items: center;
-    .lang-container {
+    .hover-zone {
         position: absolute;
-        bottom: -5px;
+        bottom: 0px;
         transform: translateY(100%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 150px;
-        background-color: white;
-        border: 1px solid #979797;
-        border-radius: 3px;
-        margin-top: 5px;
         visibility: hidden;
         opacity: 0;
-        transition: visibility 0s, opacity 0.5s linear;
-        .lang {
-            width: 100%;
-            padding: 5px 10px;
-            cursor: pointer;
-            &:hover {
-                background-color: #fafafa;
+        transition: visibility 0s, opacity 0.2s linear;
+        z-index: 10;
+        left: -10px;
+        .lang-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 150px;
+            background-color: white;
+            border: 1px solid #979797;
+            border-radius: 3px;
+            margin-top: 10px;
+
+            .lang {
+                width: 100%;
+                padding: 5px 10px;
+                cursor: pointer;
+                &:hover {
+                    background-color: #fafafa;
+                }
             }
         }
     }
+
     &:hover {
-        .lang-container {
+        .hover-zone {
             visibility: visible;
             opacity: 1;
         }
     }
     .current-lang {
         position: relative;
-        .triangle {
-            position: absolute;
-            right: -15px;
-            top: 55%;
-            transform: translateY(-50%);
+        white-space: nowrap;
+        .triangle-container {
+            position: relative;
+            width: 9px;
+            height: 10px;
+            display: inline-block;
             margin-left: 5px;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 7px 4.5px 0 4.5px;
-            border-color: #2c2c2c transparent transparent transparent;
+            .triangle {
+                position: absolute;
+                top: 55%;
+                transform: translateY(-50%);
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 7px 4.5px 0 4.5px;
+                border-color: #2c2c2c transparent transparent transparent;
+            }
         }
     }
 }
