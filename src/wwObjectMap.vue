@@ -33,12 +33,12 @@ export default {
             availableLangs: wwLib.wwLang.availableLangs,
             languages: {
                 en: {
-                    en: 'English',
-                    fr: 'Anglais'
+                    en: 'en',
+                    fr: 'en'
                 },
                 fr: {
-                    en: 'French',
-                    fr: 'Français'
+                    en: 'fr',
+                    fr: 'fr'
                 }
             }
         }
@@ -106,7 +106,7 @@ export default {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 150px;
+            width: 70px;
             background-color: white;
             border: 1px solid #979797;
             border-radius: 3px;
