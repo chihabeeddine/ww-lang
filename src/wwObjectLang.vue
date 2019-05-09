@@ -1,13 +1,13 @@
 <template>
-    <div class="ww-lang">
+    <div class="ww-lang" :style="{'color': mainColor}">
         <div class="current-lang">
             {{displayLang(currentLang)}}
             <div class="triangle-container">
-                <span class="triangle"></span>
+                <span class="triangle" :style="{'border-top-color': mainColor}"></span>
             </div>
         </div>
         <div class="hover-zone">
-            <div class="lang-container">
+            <div class="lang-container" :style="{'border-color': mainColor}">
                 <div class="lang" v-for="lang in availableLangs" :key="lang" @click="setLang(lang)">{{displayLang(lang)}}</div>
             </div>
         </div>
@@ -49,6 +49,9 @@ export default {
         },
         editMode() {
             return this.wwObjectCtrl.getEditMode() == 'CONTENT'
+        },
+        mainColor() {
+            return this.wwObject.content.data.mainColor || '#2c2c2c'
         }
     },
     watch: {
@@ -63,6 +66,80 @@ export default {
         },
         displayLang(lang) {
             return this.languages[lang][lang]
+        },
+        async edit() {
+            console.log('erogheoprihg')
+            wwLib.wwObjectHover.setLock(this);
+            let editList = {
+                WWLANG_COLOR: {
+                    title: {
+                        en: 'Edit the color',
+                        fr: 'Configurer la couleur'
+                    },
+                    desc: {
+                        en: 'Edit the object text color',
+                        fr: 'Éditer la couleur du texte'
+                    },
+                    icon: 'wwi wwi-color',
+                    shortcut: 'c',
+                    next: 'WWLANG_COLOR'
+                }
+            }
+
+            wwLib.wwPopups.addStory('WWLANG_COLOR', {
+                title: {
+                    en: 'Edit the object text color',
+                    fr: 'Éditer la couleur du texte'
+                },
+                type: 'wwPopupColorPicker',
+                buttons: {
+                    NEXT: {
+                        text: {
+                            en: 'Ok',
+                            fr: 'Ok'
+                        },
+                        next: false
+                    }
+                }
+            })
+
+            wwLib.wwPopups.addStory('WWLANG_EDIT', {
+                title: {
+                    en: 'Edit lang menu',
+                    fr: 'Editer le menu langue '
+                },
+                type: 'wwPopupEditWwObject',
+                buttons: null,
+                storyData: {
+                    list: editList
+                }
+            })
+
+            let options = {
+                firstPage: 'WWLANG_EDIT',
+                data: {
+                    wwObject: this.wwObject
+                }
+            }
+
+            try {
+                const result = await wwLib.wwPopups.open(options);
+                console.log('RESULT : ', result)
+
+                /*=============================================m_ÔÔ_m=============================================\
+                  STYLE
+                \================================================================================================*/
+                if (typeof (result.color) != 'undefined') {
+                    this.wwObject.content.data.mainColor = result.color;
+                }
+
+                this.wwObjectCtrl.update(this.wwObject);
+                this.wwObjectCtrl.globalEdit(result);
+                console.log(this.wwObject.content.data)
+            } catch (error) {
+                console.log(error);
+            }
+            wwLib.wwObjectHover.removeLock();
         }
     },
     mounted() {
