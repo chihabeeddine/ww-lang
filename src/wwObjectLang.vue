@@ -188,6 +188,7 @@ export default {
             border: 1px solid #979797;
             border-radius: 3px;
             margin-top: 10px;
+            color: black;
 
             .lang {
                 width: 100%;
