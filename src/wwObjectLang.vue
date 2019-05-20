@@ -1,14 +1,21 @@
 <template>
     <div class="ww-lang" :style="{'color': mainColor}">
-        <div class="current-lang">
-            {{displayLang(currentLang)}}
-            <div class="triangle-container">
-                <span class="triangle" :style="{'border-top-color': mainColor}"></span>
-            </div>
+        <div class="ww-lang-flag-title">
+            <img :src="flag">
+            <span class="wwi wwi-chevron-down"></span>
         </div>
+
         <div class="hover-zone">
             <div class="lang-container" :style="{'border-color': mainColor}">
-                <div class="lang" v-for="lang in availableLangs" :key="lang" @click="setLang(lang)">{{displayLang(lang)}}</div>
+                <div class="triangle-container">
+                    <span class="triangle"></span>
+                </div>
+                <div class="lang" :src="flag" v-for="lang in availableLangs" :key="lang" @click="setLang(lang)">
+                    <div class="ww-lang-flag selected-lang">
+                        <img :src="displayFlag(lang)">
+                        {{displayLang(lang)}}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -33,12 +40,12 @@ export default {
             availableLangs: wwLib.wwLang.availableLangs,
             languages: {
                 en: {
-                    en: 'en',
-                    fr: 'en'
+                    en: 'English',
+                    fr: 'French'
                 },
                 fr: {
-                    en: 'fr',
-                    fr: 'fr'
+                    en: 'Anglais',
+                    fr: 'Français'
                 }
             }
         }
@@ -52,7 +59,10 @@ export default {
         },
         mainColor() {
             return this.wwObject.content.data.mainColor || '#2c2c2c'
-        }
+        },
+        flag() {
+            return wwLib.wwApiRequests._getCdnUrl() + 'public/images/flags/' + this.currentLang + '.png'
+        },
     },
     watch: {
     },
@@ -67,6 +77,10 @@ export default {
         displayLang(lang) {
             return this.languages[lang][lang]
         },
+        displayFlag(lang) {
+            return wwLib.wwApiRequests._getCdnUrl() + 'public/images/flags/' + lang + '.png'
+        },
+
         async edit() {
             console.log('erogheoprihg')
             wwLib.wwObjectHover.setLock(this);
@@ -163,6 +177,39 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.ww-lang-flag-title {
+    position: relative;
+    //    position: absolute;
+    //   right: 0px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    img {
+        margin-left: 5px;
+        margin-right: 5px;
+        width: 30px;
+    }
+}
+.ww-lang-flag {
+    position: relative;
+    //    position: absolute;
+    //   right: 0px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    img {
+        margin-left: 5px;
+        margin-right: 5px;
+        width: 20px;
+    }
+
+    &:hover {
+        color: #8f1afe;
+    }
+}
+
 .ww-lang {
     position: relative;
     min-width: 50px;
@@ -173,22 +220,27 @@ export default {
     .hover-zone {
         position: absolute;
         bottom: 0px;
-        transform: translateY(100%);
+        //transform: translateY(100%);
+        transform: translate(-70%, 100%);
         visibility: hidden;
         opacity: 0;
         transition: visibility 0s, opacity 0.2s linear;
         z-index: 10;
-        left: -10px;
+        //left: -10px;
         .lang-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 70px;
+            width: 200px;
             background-color: white;
-            border: 1px solid #979797;
-            border-radius: 3px;
-            margin-top: 10px;
+            box-shadow: 0px 0px 3px 0px #bfbfbf;
+            border-radius: 10px;
+            //border: 1px solid #979797;
+            //border-radius: 3px;
+            //margin-top: 10px;
+            padding: 5px 0;
             color: black;
+            box-shadow: black;
 
             .lang {
                 width: 100%;
@@ -207,25 +259,23 @@ export default {
             opacity: 1;
         }
     }
-    .current-lang {
+
+    .triangle-container {
         position: relative;
-        white-space: nowrap;
-        .triangle-container {
-            position: relative;
-            width: 9px;
-            height: 10px;
-            display: inline-block;
-            margin-left: 5px;
-            .triangle {
-                position: absolute;
-                top: 55%;
-                transform: translateY(-50%);
-                width: 0;
-                height: 0;
-                border-style: solid;
-                border-width: 7px 4.5px 0 4.5px;
-                border-color: #2c2c2c transparent transparent transparent;
-            }
+        width: 0;
+        height: 0;
+
+        .triangle {
+            position: absolute;
+            //top: 55%;
+            //transform: translateY(-50%);
+            transform: translate(125%, -135%);
+            //box-shadow: 0px 0px 3px 0px #bfbfbf;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 15px solid #ffffff;
         }
     }
 }
