@@ -2,14 +2,12 @@
     <div class="ww-lang" :style="{'color': mainColor}">
         <div class="ww-lang-flag-title">
             <img :src="flag">
-            <span class="wwi wwi-chevron-down"></span>
+            <span :style="{'color': iconColor}" class="fas fa-chevron-down"></span>
         </div>
 
         <div class="hover-zone">
-            <div class="lang-container" :style="{'border-color': mainColor}">
-                <div class="triangle-container">
-                    <span class="triangle"></span>
-                </div>
+            <div class="triangle"></div>
+            <div class="lang-container" :style="{'color': mainColor}">
                 <div class="lang" :src="flag" v-for="lang in availableLangs" :key="lang" @click="setLang(lang)">
                     <div class="ww-lang-flag selected-lang">
                         <img :src="displayFlag(lang)">
@@ -60,6 +58,9 @@ export default {
         mainColor() {
             return this.wwObject.content.data.mainColor || '#2c2c2c'
         },
+        iconColor() {
+            return this.wwObject.content.data.iconColor || '#d9d9d9'
+        },
         flag() {
             return wwLib.wwApiRequests._getCdnUrl() + 'public/images/flags/' + this.currentLang + '.png'
         },
@@ -82,7 +83,6 @@ export default {
         },
 
         async edit() {
-            console.log('erogheoprihg')
             wwLib.wwObjectHover.setLock(this);
             let editList = {
                 WWLANG_COLOR: {
@@ -99,7 +99,7 @@ export default {
                     next: 'WWLANG_COLOR'
                 }
             }
-
+            /* todo open a popupform to change more colors */
             wwLib.wwPopups.addStory('WWLANG_COLOR', {
                 title: {
                     en: 'Edit the object text color',
@@ -177,39 +177,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.ww-lang-flag-title {
-    position: relative;
-    //    position: absolute;
-    //   right: 0px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    font-size: 1.2rem;
-    img {
-        margin-left: 5px;
-        margin-right: 5px;
-        width: 30px;
-    }
-}
-.ww-lang-flag {
-    position: relative;
-    //    position: absolute;
-    //   right: 0px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    font-size: 1.2rem;
-    img {
-        margin-left: 5px;
-        margin-right: 5px;
-        width: 20px;
-    }
-
-    &:hover {
-        color: #8f1afe;
-    }
-}
-
 .ww-lang {
     position: relative;
     min-width: 50px;
@@ -217,16 +184,27 @@ export default {
     display: flex;
     align-items: center;
     cursor: pointer;
+    .ww-lang-flag-title {
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        font-size: 1.2rem;
+        img {
+            margin-left: 5px;
+            margin-right: 5px;
+            width: 30px;
+            border-radius: 10px;
+        }
+    }
     .hover-zone {
         position: absolute;
         bottom: 0px;
-        //transform: translateY(100%);
         transform: translate(-70%, 100%);
         visibility: hidden;
         opacity: 0;
         transition: visibility 0s, opacity 0.2s linear;
         z-index: 10;
-        //left: -10px;
         .lang-container {
             display: flex;
             flex-direction: column;
@@ -235,48 +213,63 @@ export default {
             background-color: white;
             box-shadow: 0px 0px 3px 0px #bfbfbf;
             border-radius: 10px;
-            //border: 1px solid #979797;
-            //border-radius: 3px;
-            //margin-top: 10px;
+            font-family: sans-serif;
             padding: 5px 0;
             color: black;
             box-shadow: black;
-
             .lang {
                 width: 100%;
                 padding: 5px 10px;
+                border-radius: 10px;
                 cursor: pointer;
                 &:hover {
                     background-color: #fafafa;
                 }
+                .ww-lang-flag {
+                    position: relative;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    font-size: 1.2rem;
+                    img {
+                        margin-left: 5px;
+                        margin-right: 5px;
+                        width: 20px;
+                        border-radius: 7px;
+                    }
+                    &:hover {
+                        color: #8f1afe;
+                    }
+                }
             }
         }
     }
-
     &:hover {
         .hover-zone {
             visibility: visible;
             opacity: 1;
         }
     }
-
-    .triangle-container {
+    .triangle {
+        width: 20px;
+        height: 20px;
         position: relative;
-        width: 0;
-        height: 0;
-
-        .triangle {
-            position: absolute;
-            //top: 55%;
-            //transform: translateY(-50%);
-            transform: translate(125%, -135%);
-            //box-shadow: 0px 0px 3px 0px #bfbfbf;
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-bottom: 15px solid #ffffff;
-        }
+        overflow: hidden;
+        float: right;
+        right: 30px;
+        top: 2px;
+        box-shadow: 0 16px 10px -17px rgba(0, 0, 0, 0.5);
+    }
+    .triangle:after {
+        content: "";
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        background: #ffffff;
+        transform: rotate(45deg);
+        top: 11px;
+        left: 2px;
+        box-shadow: 0px 0px 6px -2px rgba(0, 0, 0, 0.5);
     }
 }
 </style>
