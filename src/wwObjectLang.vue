@@ -1,15 +1,28 @@
 <template>
-    <div class="ww-lang" :style="{'color': mainColor}">
+    <div class="ww-lang" @mouseover="setHoverMenu(true)" @mouseleave="setHoverMenu(false)" :style="{'color': mainColor}">
         <div class="ww-lang-flag-title">
             <img :src="flag">
-            <span :style="{'color': iconColor}" class="fas fa-chevron-down"></span>
+            <div class="dropdown-icon">
+                <wwObject tag="div" class="dropdown-button-icon" :ww-object="wwObject.content.data.dropDownIcon" :class="{'rotate-icon':enabledMenu}"></wwObject>
+            </div>
         </div>
 
         <div class="hover-zone">
-            <div class="triangle"></div>
-            <div class="lang-container" :style="{'color': mainColor}">
-                <div class="lang" :src="flag" v-for="lang in availableLangs" :key="lang" @click="setLang(lang)">
-                    <div class="ww-lang-flag selected-lang">
+            <div class="triangle">
+                <div class="triangle-after" :style="{'background-color': backgroundColor}"></div>
+            </div>
+            <div class="lang-container" :style="{'color': mainColor, 'background-color': backgroundColor}">
+                <div
+                    class="lang"
+                    v-for="(lang, index) in availableLangs"
+                    :src="flag"
+                    :key="lang"
+                    @mouseover="setHoverColor(true, index)"
+                    @mouseleave="setHoverColor(false, index)"
+                    :style="{'background-color': ((elementHover && (activeElementIndex == index)) ? hoverColor: '')}"
+                    @click="setLang(lang)"
+                >
+                    <div class="ww-lang-flag">
                         <img :src="displayFlag(lang)">
                         {{displayLang(lang)}}
                     </div>
@@ -34,6 +47,9 @@ export default {
     },
     data() {
         return {
+            enabledMenu: false,
+            elementHover: false,
+            activeElement: 0,
             currentLang: wwLib.wwLang.lang,
             availableLangs: wwLib.wwLang.availableLangs,
             languages: {
@@ -64,12 +80,35 @@ export default {
         flag() {
             return wwLib.wwApiRequests._getCdnUrl() + 'public/images/flags/' + this.currentLang + '.png'
         },
+        backgroundColor() {
+            return this.wwObject.content.data.backgroundColor
+        },
+        hoverColor() {
+
+            return this.wwObject.content.data.hoverColor
+        },
+        activeElementIndex() {
+            return this.activeElement
+        }
     },
     watch: {
     },
     methods: {
         init() {
             this.loaded = true
+            this.wwObject.content.data = this.wwObject.content.data || {}
+            this.wwObject.content.data.backgroundColor = '#ffffff'
+            this.wwObject.content.data.hoverColor = '#fafafa'
+
+
+            if (!this.wwObject.content.data.dropDownIcon) {
+                this.wwObject.content.data.dropDownIcon = wwLib.wwObject.getDefault({
+                    type: "ww-icon",
+
+                });
+                this.wwObjectCtrl.update(this.wwObject);
+
+            }
         },
         setLang(lang) {
             wwLib.wwLang.setLang(lang)
@@ -81,32 +120,84 @@ export default {
         displayFlag(lang) {
             return wwLib.wwApiRequests._getCdnUrl() + 'public/images/flags/' + lang + '.png'
         },
-
+        setHoverMenu(value) {
+            this.enabledMenu = value
+        },
+        setHoverColor(value, index) {
+            this.activeElement = index
+            this.elementHover = value
+        },
         async edit() {
             wwLib.wwObjectHover.setLock(this);
             let editList = {
-                WWLANG_COLOR: {
+                WWLANG_BGCOLOR: {
                     title: {
-                        en: 'Edit the color',
-                        fr: 'Configurer la couleur'
+                        en: 'Edit the popup colors',
+                        fr: 'Configurer les couleurs du popup'
                     },
                     desc: {
-                        en: 'Edit the object text color',
-                        fr: 'Éditer la couleur du texte'
+                        en: 'Edit the popup colors, background, hover and text',
+                        fr: 'Éditer la couleur du fond, du hover et du texte'
                     },
                     icon: 'wwi wwi-color',
-                    shortcut: 'c',
-                    next: 'WWLANG_COLOR'
+                    shortcut: 'd',
+                    next: 'WWLANG_BGCOLOR'
                 }
             }
-            /* todo open a popupform to change more colors */
-            wwLib.wwPopups.addStory('WWLANG_COLOR', {
+            wwLib.wwPopups.addStory('WWLANG_BGCOLOR', {
                 title: {
-                    en: 'Edit the object text color',
-                    fr: 'Éditer la couleur du texte'
+                    en: 'Color picker',
+                    fr: 'Choisir une couleur'
                 },
-                type: 'wwPopupColorPicker',
+                type: 'wwPopupForm',
+                storyData: {
+                    fields: [
+                        {
+                            label: {
+                                en: 'Background Color:',
+                                fr: 'Couleur du fond :'
+                            },
+                            type: 'color',
+                            key: 'backgroundColor',
+                            value: "#ffffff",
+                            valueData: 'backgroundColor',
+                            desc: {
+                                en: 'Choose a Background color',
+                                fr: 'Changer la couleur du fond '
+                            }
+                        },
+                        {
+                            label: {
+                                en: 'Hover Color:',
+                                fr: 'Couleur du Hover :'
+                            },
+                            type: 'color',
+                            key: 'hoverColor',
+                            value: "#fafafa",
+                            valueData: 'hoverColor',
+                            desc: {
+                                en: 'Choose the Hover color',
+                                fr: 'Changer la couleur du Hover '
+                            }
+                        },
+                        {
+                            label: {
+                                en: 'Edit the color:',
+                                fr: 'Configurer la couleur :'
+                            },
+                            type: 'color',
+                            key: 'mainColor',
+                            value: "#000000",
+                            valueData: 'mainColor',
+                            desc: {
+                                en: 'Edit the object text color',
+                                fr: 'Éditer la couleur du texte '
+                            }
+                        },
+                    ]
+                },
                 buttons: {
+
                     NEXT: {
                         text: {
                             en: 'Ok',
@@ -116,6 +207,7 @@ export default {
                     }
                 }
             })
+
 
             wwLib.wwPopups.addStory('WWLANG_EDIT', {
                 title: {
@@ -138,18 +230,21 @@ export default {
 
             try {
                 const result = await wwLib.wwPopups.open(options);
-                console.log('RESULT : ', result)
 
                 /*=============================================m_ÔÔ_m=============================================\
                   STYLE
                 \================================================================================================*/
-                if (typeof (result.color) != 'undefined') {
-                    this.wwObject.content.data.mainColor = result.color;
+                if (typeof (result.mainColor) != 'undefined') {
+                    this.wwObject.content.data.mainColor = result.mainColor;
                 }
-
+                if (typeof (result.backgroundColor) != 'undefined') {
+                    this.wwObject.content.data.backgroundColor = result.backgroundColor;
+                }
+                if (typeof (result.hoverColor) != 'undefined') {
+                    this.wwObject.content.data.hoverColor = result.hoverColor;
+                }
                 this.wwObjectCtrl.update(this.wwObject);
                 this.wwObjectCtrl.globalEdit(result);
-                console.log(this.wwObject.content.data)
             } catch (error) {
                 console.log(error);
             }
@@ -196,6 +291,11 @@ export default {
             width: 30px;
             border-radius: 10px;
         }
+        .dropdown-icon {
+            .rotate-icon {
+                transform: rotate(180deg);
+            }
+        }
     }
     .hover-zone {
         position: absolute;
@@ -205,12 +305,30 @@ export default {
         opacity: 0;
         transition: visibility 0s, opacity 0.2s linear;
         z-index: 10;
+        .triangle {
+            width: 20px;
+            height: 20px;
+            position: relative;
+            overflow: hidden;
+            float: right;
+            right: 30px;
+            top: 1px;
+            box-shadow: 0 16px 10px -17px rgba(0, 0, 0, 0.5);
+        }
+        .triangle-after {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            transform: rotate(45deg);
+            top: 13px;
+            left: 2px;
+            box-shadow: 0px 0px 6px -2px rgba(0, 0, 0, 0.5);
+        }
         .lang-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 200px;
-            background-color: white;
             box-shadow: 0px 0px 3px 0px #bfbfbf;
             border-radius: 10px;
             font-family: sans-serif;
@@ -222,9 +340,6 @@ export default {
                 padding: 5px 10px;
                 border-radius: 10px;
                 cursor: pointer;
-                &:hover {
-                    background-color: #fafafa;
-                }
                 .ww-lang-flag {
                     position: relative;
                     cursor: pointer;
@@ -249,27 +364,6 @@ export default {
             visibility: visible;
             opacity: 1;
         }
-    }
-    .triangle {
-        width: 20px;
-        height: 20px;
-        position: relative;
-        overflow: hidden;
-        float: right;
-        right: 30px;
-        top: 2px;
-        box-shadow: 0 16px 10px -17px rgba(0, 0, 0, 0.5);
-    }
-    .triangle:after {
-        content: "";
-        position: absolute;
-        width: 15px;
-        height: 15px;
-        background: #ffffff;
-        transform: rotate(45deg);
-        top: 11px;
-        left: 2px;
-        box-shadow: 0px 0px 6px -2px rgba(0, 0, 0, 0.5);
     }
 }
 </style>
